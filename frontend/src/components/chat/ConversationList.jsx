@@ -51,6 +51,11 @@ export default function ConversationList({
                 type="button"
                 onClick={() => onSelect(conversation)}
                 disabled={locked}
+                title={
+                  locked
+                    ? "This friendship predates chat, so its conversation id was never recorded. Chats with people you add or accept from now on open normally."
+                    : undefined
+                }
                 className={`
                   w-full rounded-lg border px-4 py-3.5 text-left transition-colors
                   ${
@@ -93,7 +98,7 @@ export default function ConversationList({
                           <span className="flex items-center gap-1.5 not-italic">
                             <Lock className="h-3 w-3" strokeWidth={2.4} />
                             <span className="font-display text-[10px] font-bold uppercase tracking-[0.1em]">
-                              No conversation yet
+                              Chat unavailable
                             </span>
                           </span>
                         ) : conversation.lastMessage ? (

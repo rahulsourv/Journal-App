@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   ArrowRight,
   MessageSquare,
-  Info,
   Wifi,
   WifiOff,
   Flame,
@@ -60,8 +59,6 @@ export default function Messages() {
     }
   }, [conversationId, loading, active, navigate]);
 
-  const lockedCount = conversations.filter((c) => !c.conversationId).length;
-
   if (loading) {
     return (
       <PageTransition>
@@ -103,17 +100,6 @@ export default function Messages() {
               Messages
             </motion.h1>
           </header>
-
-          {lockedCount > 0 && (
-            <p className="mx-margin-mobile mb-4 flex items-start gap-2.5 border-l-2 border-secondary bg-secondary-fixed/40 px-3.5 py-2.5 font-annotation text-[11px] leading-relaxed text-secondary md:mx-0">
-              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2.4} />
-              <span>
-                {lockedCount} chat{lockedCount === 1 ? "" : "s"} can&rsquo;t open —
-                the API gives no conversation id for friendships made before now.
-                New friends work.
-              </span>
-            </p>
-          )}
 
           <ConversationList
             conversations={filtered}
