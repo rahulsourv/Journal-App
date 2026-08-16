@@ -57,41 +57,56 @@ export default function JournalEditor({
   const words = wordCount(content);
   const canSave = content.trim().length > 0 && !saving && !saved;
 
+  // "Sunday, August 16" — the mobile design leads with the date as a headline.
+  const longDateline = (() => {
+    const parts = formatDateline().split(" · ");
+    const weekday = parts[0]?.charAt(0) + parts[0]?.slice(1).toLowerCase();
+    const monthDay = parts[1]?.charAt(0) + parts[1]?.slice(1).toLowerCase();
+    return `${weekday}, ${monthDay}`;
+  })();
+
   return (
     <div className="relative mx-auto max-w-3xl">
-      {/* Meta rail above the sheet */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <span className="flex items-center gap-2 font-display text-label-caps uppercase text-on-surface-variant">
+      {/* Meta rail above the sheet. On mobile the streak leads, with the
+          date set large underneath — as in the mobile design. */}
+      <div className="mb-5 lg:mb-6 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-4">
+        {streak > 0 && (
+          <span className="relative inline-flex items-center gap-2 font-display text-label-caps uppercase text-on-surface-variant lg:order-2">
+            <span className="washi -left-2 -top-1 h-6 w-20 -rotate-2 bg-primary-fixed/70 lg:hidden" />
+            <Flame className="relative h-3.5 w-3.5 text-primary" strokeWidth={2.6} />
+            <span className="relative">
+              Day {streak + (isEditing ? 0 : 1)} streak
+            </span>
+          </span>
+        )}
+
+        <span className="hidden items-center gap-2 font-display text-label-caps uppercase text-on-surface-variant lg:flex lg:order-1">
           <CalendarDays className="h-3.5 w-3.5 text-primary" strokeWidth={2.6} />
           {formatDateline()}
         </span>
 
-        {streak > 0 && (
-          <span className="flex items-center gap-2 font-display text-label-caps uppercase text-on-surface-variant">
-            <Flame className="h-3.5 w-3.5 text-primary" strokeWidth={2.6} />
-            Day {streak + (isEditing ? 0 : 1)} of your streak
-          </span>
-        )}
+        <h1 className="mt-2 font-display text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.035em] lg:hidden">
+          {longDateline}
+        </h1>
       </div>
 
-      {/* The sheet */}
+      {/* The sheet. Full-bleed on mobile — no border or shadow competing
+          with the writing surface on a small screen. */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative bg-surface-lowest shadow-paper-lg"
+        className="relative bg-transparent lg:bg-surface-lowest lg:shadow-paper-lg"
       >
-        <span className="washi -right-4 -top-3 h-9 w-32 rotate-[4deg] bg-tertiary-bright/50" />
+        <span className="washi -right-4 -top-3 hidden h-9 w-32 rotate-[4deg] bg-tertiary-bright/50 lg:block" />
 
-        <SunMark
-          className="pointer-events-none absolute bottom-6 right-6 h-12 w-12 text-outline-variant/40"
-        />
+        <SunMark className="pointer-events-none absolute right-2 top-10 h-24 w-24 text-outline-variant/30 lg:bottom-6 lg:right-6 lg:top-auto lg:h-12 lg:w-12 lg:text-outline-variant/40" />
 
-        <div className="relative z-10 px-7 py-10 md:px-14 md:py-14">
-          <h2 className="mb-2 font-journal text-[2rem] font-bold leading-tight md:text-[2.5rem]">
+        <div className="relative z-10 py-2 lg:px-14 lg:py-14">
+          <h2 className="mb-2 font-journal text-[1.5rem] font-bold italic leading-tight lg:text-[2.5rem] lg:not-italic">
             Dear today,
           </h2>
-          <div className="mb-8 h-0.5 w-full bg-on-surface" />
+          <div className="mb-6 h-0.5 w-full bg-on-surface lg:mb-8" />
 
           <textarea
             ref={textareaRef}
@@ -106,7 +121,8 @@ export default function JournalEditor({
         </div>
       </motion.div>
 
-      {/* Controls below the sheet */}
+      {/* Controls. On mobile the save button is pinned to the bottom of the
+          viewport so it stays reachable however long the entry grows. */}
       <div className="mt-8 flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
         <JournalVisibility
           isPublic={isPublic}
@@ -114,9 +130,10 @@ export default function JournalEditor({
           disabled={saving || saved}
         />
 
-        <div className="flex flex-col items-start gap-3 md:items-end">
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-outline-variant/60 bg-surface/90 px-margin-mobile py-3 frost md:static md:z-auto md:flex-col md:items-end md:gap-3 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
           <span className="font-annotation text-[11px] tracking-[0.12em] text-on-surface-variant/50">
-            {words} {words === 1 ? "word" : "words"} · ⌘↵ to save
+            {words} {words === 1 ? "word" : "words"}
+            <span className="hidden md:inline"> · ⌘↵ to save</span>
           </span>
 
           {/* Steps 1–4 of the unlock sequence animate this button. */}
@@ -127,7 +144,7 @@ export default function JournalEditor({
             onClick={() => onSave?.({ content: content.trim(), isPublic })}
             whileHover={canSave ? { y: -2, x: -1 } : undefined}
             whileTap={canSave ? { y: 3, x: 3 } : undefined}
-            className="relative inline-flex min-w-[15rem] items-center justify-center gap-2.5 border-2 border-primary bg-primary px-9 py-4 font-display text-[13px] font-bold uppercase tracking-[0.14em] text-on-primary shadow-press-primary transition-colors hover:bg-primary-bright disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none"
+            className="relative inline-flex shrink-0 items-center justify-center gap-2.5 border-2 border-primary bg-primary px-7 py-3 font-display text-[12px] font-bold uppercase tracking-[0.14em] text-on-primary shadow-press-primary transition-colors hover:bg-primary-bright disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none md:min-w-[15rem] md:px-9 md:py-4 md:text-[13px]"
           >
             <span
               ref={saveRefs.spinner}

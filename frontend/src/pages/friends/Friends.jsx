@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Users, Search } from "lucide-react";
 
 import PageTransition from "../../components/layout/PageTransition";
 import FriendGrid from "../../components/friends/FriendGrid";
@@ -38,7 +38,12 @@ export default function Friends() {
 
   return (
     <PageTransition className="mx-auto max-w-7xl">
-      <header className="relative mb-12">
+      <header className="relative mb-9 lg:mb-12">
+        {/* washi tape stuck above the headline, as in the mobile design */}
+        <span
+          className="washi -top-3 left-0 h-6 w-16 -rotate-3 bg-primary-fixed/80 lg:hidden"
+          aria-hidden="true"
+        />
         <span
           className="watermark absolute -left-3 -top-8 hidden text-[10rem] lg:block"
           aria-hidden="true"
@@ -51,12 +56,26 @@ export default function Friends() {
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="font-display text-[2.75rem] font-extrabold uppercase leading-none tracking-[-0.035em] sm:text-6xl lg:text-7xl"
+            className="font-display text-[2.25rem] font-extrabold uppercase leading-none tracking-[-0.035em] sm:text-6xl lg:text-7xl"
           >
             Your people.
           </motion.h1>
 
-          <div className="mt-7 flex flex-wrap items-center gap-4">
+          {/* Mobile: one compact line. Desktop: badges with room to breathe. */}
+          <p className="mt-3 flex items-center gap-2 font-annotation text-sm text-on-surface-variant lg:hidden">
+            <Users className="h-4 w-4 text-primary" strokeWidth={2.4} />
+            {loading ? (
+              "…"
+            ) : (
+              <>
+                {friends.length} {friends.length === 1 ? "Friend" : "Friends"}
+                <span className="text-outline">•</span>
+                <span className="text-primary">{activeToday} Active Today</span>
+              </>
+            )}
+          </p>
+
+          <div className="mt-7 hidden flex-wrap items-center gap-4 lg:flex">
             <Badge tone="secondary">
               {loading ? "…" : `${friends.length} friends`}
             </Badge>
@@ -73,7 +92,19 @@ export default function Friends() {
             </Button>
           </div>
 
-          <div className="mt-7 h-0.5 w-full bg-on-surface" />
+          {/* Mobile search opens the same add-friend flow. */}
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="mt-7 flex w-full items-center gap-3 border-b-2 border-outline-variant pb-2.5 text-left lg:hidden"
+          >
+            <Search className="h-5 w-5 shrink-0 text-on-surface-variant" strokeWidth={2} />
+            <span className="font-journal text-journal-body text-on-surface-variant/50">
+              Find a friend…
+            </span>
+          </button>
+
+          <div className="mt-7 hidden h-0.5 w-full bg-on-surface lg:block" />
         </div>
       </header>
 

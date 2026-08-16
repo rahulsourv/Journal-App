@@ -31,9 +31,10 @@ Thumbs.db
 *.sln
 *.sw?
 
-# Design reference — 16MB of Stitch mockups and screenshots.
+# Design reference — Stitch mockups and screenshots (desktop + mobile).
 # Nothing builds from these; keep them locally instead.
 stitch_daymark_editorial_social_journaling/
+stitch_mobile/
 
 # Your friend's backend — lives in his own repo, not committed here.
 perfectbackend/

@@ -62,16 +62,36 @@ export default function MyJournal() {
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="font-display text-[2.75rem] font-extrabold uppercase leading-none tracking-[-0.035em] text-primary sm:text-6xl lg:text-7xl"
+            className="font-display text-[2.25rem] font-extrabold uppercase leading-none tracking-[-0.035em] text-primary sm:text-6xl lg:text-7xl"
           >
             Your story
           </motion.h1>
+
+          {/* Mobile: oversized numerals side by side, per the mobile design. */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 flex items-start gap-10 lg:hidden"
+          >
+            {[
+              { value: stats.total, label: stats.total === 1 ? "Entry" : "Entries" },
+              { value: stats.streak, label: "Day Streak" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p className="font-display text-4xl font-extrabold leading-none tracking-[-0.04em] tabular-nums">
+                  {stat.value}
+                </p>
+                <p className="label-caps mt-1.5 text-on-surface-variant/70">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-3"
+            className="mt-6 hidden flex-wrap items-center gap-x-7 gap-y-3 lg:flex"
           >
             <StatPip
               value={stats.total}

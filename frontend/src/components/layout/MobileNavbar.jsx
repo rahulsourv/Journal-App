@@ -1,25 +1,34 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CalendarDays, BookOpen, Users, UserPlus, CircleUser, PenLine } from "lucide-react";
+import { CalendarDays, SquarePen, Users, CircleUser, PenLine } from "lucide-react";
 
+/**
+ * Mobile navigation — a floating rounded pill rather than a flat edge-to-edge
+ * bar, per the mobile design: inset from the screen edges, frosted, with the
+ * same hard coral offset shadow used on paper elsewhere.
+ *
+ * Four destinations only. Friend requests live in the top bar's bell instead,
+ * which keeps this row uncrowded and each target comfortably tappable.
+ */
 const MOBILE_ITEMS = [
   { to: "/", label: "Today", icon: CalendarDays, end: true },
-  { to: "/journal", label: "Journal", icon: BookOpen },
+  { to: "/journal", label: "Journal", icon: SquarePen },
   { to: "/friends", label: "Friends", icon: Users },
-  { to: "/requests", label: "Requests", icon: UserPlus },
   { to: "/profile", label: "Profile", icon: CircleUser },
 ];
 
-/**
- * Bottom navigation for mobile, with a floating write button that overlaps
- * the bar — the primary action stays reachable from every screen.
- */
-export default function MobileNavbar({ requestCount = 0 }) {
+export default function MobileNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Writing is a focused mode: the editor has its own sticky save bar, and
+  // the design shows no bottom nav there. Leaving it would also stack two
+  // fixed bars on top of each other.
+  if (location.pathname === "/journal/write") return null;
+
   return (
     <>
+      {/* Write stays one tap away from every screen; sits above the pill. */}
       <motion.button
         type="button"
         onClick={() => navigate("/journal/write")}
@@ -28,63 +37,54 @@ export default function MobileNavbar({ requestCount = 0 }) {
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 380, damping: 24, delay: 0.3 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-[4.6rem] right-5 z-50 grid h-14 w-14 place-items-center border-2 border-primary bg-primary text-on-primary shadow-press-primary lg:hidden"
+        className="fixed bottom-28 right-5 z-50 grid h-14 w-14 place-items-center rounded-full border-2 border-primary bg-primary text-on-primary shadow-press-primary lg:hidden"
       >
         <PenLine className="h-5 w-5" strokeWidth={2.6} />
       </motion.button>
 
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant/70 bg-surface/90 frost lg:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="fixed inset-x-margin-mobile bottom-6 z-40 mx-auto flex h-16 max-w-md items-center justify-around rounded-full border border-outline-variant/40 bg-surface-container/90 frost shadow-[4px_4px_0_0_rgb(var(--primary)/0.2)] lg:hidden"
       >
-        <div className="flex items-stretch justify-around">
-          {MOBILE_ITEMS.map((item) => {
-            const isActive = item.end
-              ? location.pathname === item.to
-              : location.pathname.startsWith(item.to);
-            const showCount = item.to === "/requests" && requestCount > 0;
+        {MOBILE_ITEMS.map((item) => {
+          const isActive = item.end
+            ? location.pathname === item.to
+            : location.pathname.startsWith(item.to);
 
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className="relative flex flex-1 flex-col items-center gap-1 py-2.5"
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="mobile-active-bar"
-                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                    className="absolute inset-x-4 top-0 h-0.5 bg-primary"
-                  />
-                )}
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className="relative flex items-center justify-center rounded-full px-4 py-2 active:translate-y-0.5"
+            >
+              {/* The filled pill slides between items. */}
+              {isActive && (
+                <motion.span
+                  layoutId="mobile-active-pill"
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  className="absolute inset-0 rounded-full bg-primary"
+                />
+              )}
 
-                <span className="relative">
-                  <item.icon
-                    className={`h-[19px] w-[19px] transition-colors ${
-                      isActive ? "text-primary" : "text-on-surface-variant/65"
-                    }`}
-                    strokeWidth={isActive ? 2.5 : 1.9}
-                  />
-                  {showCount && (
-                    <span className="absolute -right-1.5 -top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-primary px-1 font-display text-[8px] font-bold text-on-primary">
-                      {requestCount}
-                    </span>
-                  )}
-                </span>
-
+              <span className="relative z-10 flex flex-col items-center gap-0.5">
+                <item.icon
+                  className={`h-[19px] w-[19px] transition-colors ${
+                    isActive ? "text-on-primary" : "text-on-surface-variant/70"
+                  }`}
+                  strokeWidth={isActive ? 2.5 : 1.9}
+                />
                 <span
-                  className={`font-display text-[9px] uppercase tracking-[0.1em] transition-colors ${
-                    isActive ? "font-bold text-primary" : "text-on-surface-variant/60"
+                  className={`font-display text-[9px] font-bold uppercase leading-none tracking-[0.08em] transition-colors ${
+                    isActive ? "text-on-primary" : "text-on-surface-variant/60"
                   }`}
                 >
                   {item.label}
                 </span>
-              </NavLink>
-            );
-          })}
-        </div>
+              </span>
+            </NavLink>
+          );
+        })}
       </nav>
     </>
   );

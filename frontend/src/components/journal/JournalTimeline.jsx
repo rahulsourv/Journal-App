@@ -8,18 +8,17 @@ import { staggerContainer } from "../../animations/staggerAnimations";
 import { isTodayIST } from "../../utils/dateUtils";
 
 /**
- * Chronological archive with a vertical rail. Each entry hangs off a stacked
- * date marker, mirroring the way a physical journal is indexed by day.
- */
-/**
+ * Chronological archive.
+ *
+ * Mobile stacks a small date chip above a full-width card — a 375px screen
+ * can't spare ~90px for a date column. Desktop keeps the vertical rail with
+ * large stacked date markers.
+ *
  * Two ways to open an entry:
  *   `linkable` — navigate to /journal/:id (only valid for your own archive,
- *                since the API has no route for fetching someone else's by id)
+ *                since the API has no route for someone else's by id)
  *   `onSelect` — hand the entry back to the parent, which opens the reader
- *                modal using content already in memory (friends' archives)
- *
- * With neither, entries are inert and the "read full entry" affordance is
- * hidden rather than shown as a dead link.
+ *                using content already in memory (friends' archives)
  */
 export default function JournalTimeline({
   journals = [],
@@ -37,9 +36,9 @@ export default function JournalTimeline({
       animate="animate"
       className={`relative ${className}`}
     >
-      {/* the rail */}
+      {/* the rail — desktop only */}
       <span
-        className="absolute bottom-6 left-[2.35rem] top-6 w-px bg-outline-variant md:left-[3.35rem]"
+        className="absolute bottom-6 left-[3.35rem] top-6 hidden w-px bg-outline-variant lg:block"
         aria-hidden="true"
       />
 
@@ -51,12 +50,30 @@ export default function JournalTimeline({
           <motion.li
             key={journal._id}
             variants={timelineItem}
-            className="relative flex gap-5 pb-8 md:gap-8"
+            className="relative pb-8 lg:flex lg:gap-8"
           >
-            {/* date marker */}
-            <div className="relative z-10 shrink-0">
+            {/* ---- Mobile: date chip above the card ---- */}
+            <div className="relative mb-3 flex items-center gap-2.5 lg:hidden">
+              <span
+                className={`h-2 w-2 shrink-0 rounded-full ${
+                  today ? "bg-primary" : "bg-outline-variant"
+                }`}
+                aria-hidden="true"
+              />
+              <span className="relative">
+                {today && (
+                  <span className="washi -left-1 -top-0.5 h-6 w-full rotate-[-2deg] bg-primary-fixed/80" />
+                )}
+                <span className="relative font-display text-label-caps uppercase tracking-[0.12em] text-on-surface">
+                  {month} {day}
+                </span>
+              </span>
+            </div>
+
+            {/* ---- Desktop: stacked date marker on the rail ---- */}
+            <div className="relative z-10 hidden shrink-0 lg:block">
               <div
-                className={`flex h-[4.6rem] w-[4.6rem] flex-col items-center justify-center border-2 md:h-[6.7rem] md:w-[6.7rem] ${
+                className={`flex h-[6.7rem] w-[6.7rem] flex-col items-center justify-center border-2 ${
                   today
                     ? "border-primary bg-primary text-on-primary"
                     : "border-outline-variant bg-surface-lowest text-primary"
@@ -65,29 +82,25 @@ export default function JournalTimeline({
                 <span className="font-display text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">
                   {month}
                 </span>
-                <span className="font-display text-2xl font-extrabold leading-none tracking-tight md:text-4xl">
+                <span className="font-display text-4xl font-extrabold leading-none tracking-tight">
                   {day}
                 </span>
               </div>
             </div>
 
-            {/* entry */}
+            {/* ---- The entry ---- */}
             <Entry
               {...(onSelect
                 ? { type: "button", onClick: () => onSelect(journal) }
                 : linkable
                   ? { to: `/journal/${journal._id}` }
                   : {})}
-              className={`group relative block min-w-0 flex-1 text-left paper grain-panel p-6 md:p-7 ${
+              className={`group relative block w-full min-w-0 flex-1 text-left paper grain-panel p-5 sm:p-6 lg:p-7 ${
                 openable ? "transition-shadow duration-300 hover:shadow-paper-lg" : ""
               }`}
             >
-              {today && (
-                <span className="washi -left-3 -top-2 h-6 w-24 rotate-[-5deg] bg-tertiary-bright/50" />
-              )}
-
               <div className="relative z-10">
-                <div className="mb-4 flex flex-wrap items-center gap-2.5">
+                <div className="mb-3 flex flex-wrap items-center gap-2.5 lg:mb-4">
                   <Badge
                     tone={journal.isPublic ? "secondary" : "neutral"}
                     size="sm"
@@ -105,12 +118,12 @@ export default function JournalTimeline({
                   </span>
                 </div>
 
-                <p className="font-journal text-journal-body leading-relaxed text-on-surface text-pretty">
+                <p className="font-journal text-[17px] leading-relaxed text-on-surface text-pretty sm:text-journal-body">
                   {excerpt(journal.content, 240)}
                 </p>
 
                 {openable && (
-                  <span className="mt-5 flex items-center gap-1.5 font-display text-label-caps-sm uppercase text-on-surface-variant/55 transition-colors group-hover:text-primary">
+                  <span className="mt-4 flex items-center gap-1.5 font-display text-label-caps-sm uppercase text-on-surface-variant/55 transition-colors group-hover:text-primary lg:mt-5">
                     Read full entry
                     <ArrowRight
                       className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"

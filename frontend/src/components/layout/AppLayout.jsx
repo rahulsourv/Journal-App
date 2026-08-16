@@ -26,8 +26,9 @@ export default function AppLayout() {
       <div className="lg:pl-sidebar">
         <Topbar requestCount={requestCount} />
 
-        {/* Bottom padding clears the mobile nav bar and its floating button. */}
-        <main className="relative z-10 px-5 pb-32 pt-8 md:px-8 md:pt-10 lg:px-margin-desktop lg:pb-20">
+        {/* pb-36 clears the floating nav pill (bottom-6 + h-16) plus the
+            write button that sits above it. */}
+        <main className="relative z-10 px-margin-mobile pb-36 pt-8 md:px-8 md:pt-10 lg:px-margin-desktop lg:pb-20">
           {/* Keying on the path remounts the page, so each one replays its
               <PageTransition> entrance. Deliberately not wrapped in
               AnimatePresence — see the note in routes/AppRoutes.jsx. */}
@@ -37,7 +38,7 @@ export default function AppLayout() {
         </main>
       </div>
 
-      <MobileNavbar requestCount={requestCount} />
+      <MobileNavbar />
     </div>
   );
 }
