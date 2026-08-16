@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import * as friendService from "../services/friendService";
 import * as journalService from "../services/journalService";
 import { invalidateUserCache } from "../services/userService";
+import { setConversationId } from "../utils/storage";
 import useAuth from "./useAuth";
 
 /**
@@ -55,13 +56,19 @@ export function useFriends({ auto = true, includeRequests = true } = {}) {
 
   const accept = useCallback(
     async (requestId) => {
+      // Capture the room id before it becomes unreachable — once accepted,
+      // no endpoint returns this request again.
+      const incoming = requests.find((r) => r._id === requestId);
+      const senderId = incoming?.senderId?._id ?? incoming?.senderId;
+      if (senderId) setConversationId(myId, senderId, requestId);
+
       const request = await friendService.acceptFriendRequest(requestId);
       setRequests((prev) => prev.filter((r) => r._id !== requestId));
       setFriends(await friendService.getFriends());
       invalidateUserCache();
       return request;
     },
-    []
+    [requests, myId]
   );
 
   const reject = useCallback(async (requestId) => {
@@ -72,6 +79,14 @@ export function useFriends({ auto = true, includeRequests = true } = {}) {
   const sendRequest = useCallback(
     async (target) => {
       const request = await friendService.sendFriendRequest(target);
+
+      // The id survives acceptance unchanged, so recording it now means the
+      // chat room is known if they accept later.
+      const receiverId = request?.receiverId?._id ?? request?.receiverId;
+      if (receiverId && request?._id) {
+        setConversationId(myId, receiverId, request._id);
+      }
+
       // Re-read so the Sent list reflects the new request immediately.
       const groups = await friendService.getFriendRequests(myId);
       setSentRequests(groups.sent);

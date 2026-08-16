@@ -35,6 +35,7 @@ Thumbs.db
 # Nothing builds from these; keep them locally instead.
 stitch_daymark_editorial_social_journaling/
 stitch_mobile/
+stitch_chat/
 
 # Your friend's backend — lives in his own repo, not committed here.
 perfectbackend/

@@ -14,6 +14,7 @@ import Friends from "../pages/friends/Friends";
 import FriendProfile from "../pages/friends/FriendProfile";
 import FriendRequests from "../pages/friends/FriendRequests";
 import Discover from "../pages/discover/Discover";
+import Messages from "../pages/messages/Messages";
 import Profile from "../pages/profile/Profile";
 import NotFound from "../pages/NotFound";
 
@@ -43,6 +44,9 @@ export default function AppRoutes() {
           <Route path="/friends" element={<Friends />} />
           <Route path="/friends/:friendId" element={<FriendProfile />} />
           <Route path="/requests" element={<FriendRequests />} />
+
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
 
           <Route path="/discover" element={<Discover />} />
           <Route path="/profile" element={<Profile />} />

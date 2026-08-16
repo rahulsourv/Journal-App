@@ -7,6 +7,7 @@ import {
   UserPlus,
   Compass,
   CircleUser,
+  MessageSquare,
   LogOut,
   PenLine,
 } from "lucide-react";
@@ -19,6 +20,7 @@ export const NAV_ITEMS = [
   { to: "/", label: "Today", icon: CalendarDays, end: true },
   { to: "/journal", label: "My Journal", icon: BookOpen },
   { to: "/friends", label: "Friends", icon: Users },
+  { to: "/messages", label: "Messages", icon: MessageSquare },
   { to: "/requests", label: "Requests", icon: UserPlus },
   { to: "/discover", label: "Discover", icon: Compass },
   { to: "/profile", label: "Profile", icon: CircleUser },
