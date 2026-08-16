@@ -28,7 +28,7 @@ const MOBILE_ITEMS = [
   { to: "/profile", label: "Profile", icon: CircleUser },
 ];
 
-export default function MobileNavbar() {
+export default function MobileNavbar({ unreadCount = 0 }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -87,6 +87,12 @@ export default function MobileNavbar() {
                 }`}
                 strokeWidth={isActive ? 2.4 : 1.9}
               />
+
+              {item.to === "/messages" && unreadCount > 0 && !isActive && (
+                <span className="absolute right-1 top-1 z-10 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-display text-[9px] font-bold text-on-primary">
+                  {unreadCount}
+                </span>
+              )}
             </NavLink>
           );
         })}

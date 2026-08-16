@@ -75,26 +75,47 @@ export default function ConversationList({
                         {conversation.username}
                       </p>
                       {conversation.lastAt && (
-                        <span className="shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/50">
+                        <span
+                          className={`shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.1em] ${
+                            conversation.unread > 0
+                              ? "text-primary"
+                              : "text-on-surface-variant/50"
+                          }`}
+                        >
                           {formatRelative(conversation.lastAt)}
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-0.5 truncate font-journal text-[15px] italic text-on-surface-variant/75">
-                      {locked ? (
-                        <span className="flex items-center gap-1.5 not-italic">
-                          <Lock className="h-3 w-3" strokeWidth={2.4} />
-                          <span className="font-display text-[10px] font-bold uppercase tracking-[0.1em]">
-                            No conversation yet
+                    <div className="mt-0.5 flex items-center justify-between gap-2">
+                      <p className="min-w-0 flex-1 truncate font-journal text-[15px] italic text-on-surface-variant/75">
+                        {locked ? (
+                          <span className="flex items-center gap-1.5 not-italic">
+                            <Lock className="h-3 w-3" strokeWidth={2.4} />
+                            <span className="font-display text-[10px] font-bold uppercase tracking-[0.1em]">
+                              No conversation yet
+                            </span>
                           </span>
+                        ) : conversation.lastMessage ? (
+                          <>
+                            {conversation.lastFromMe && (
+                              <span className="not-italic text-on-surface-variant/50">
+                                You:{" "}
+                              </span>
+                            )}
+                            {excerpt(conversation.lastMessage, 38)}
+                          </>
+                        ) : (
+                          "Say something first…"
+                        )}
+                      </p>
+
+                      {conversation.unread > 0 && (
+                        <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-[10px] font-bold text-on-primary">
+                          {conversation.unread}
                         </span>
-                      ) : conversation.lastMessage ? (
-                        excerpt(conversation.lastMessage, 44)
-                      ) : (
-                        "Say something first…"
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </button>

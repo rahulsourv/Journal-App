@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileNavbar from "./MobileNavbar";
 import useFriends from "../../hooks/useFriends";
+import useConversations from "../../hooks/useConversations";
 import usePageTransition from "../../hooks/usePageTransition";
 
 /**
@@ -15,13 +16,14 @@ import usePageTransition from "../../hooks/usePageTransition";
 export default function AppLayout() {
   const location = useLocation();
   const { requests } = useFriends({ includeRequests: true });
+  const { totalUnread } = useConversations();
   usePageTransition();
 
   const requestCount = requests.length;
 
   return (
     <div className="relative min-h-screen bg-surface">
-      <Sidebar requestCount={requestCount} />
+      <Sidebar requestCount={requestCount} unreadCount={totalUnread} />
 
       <div className="lg:pl-sidebar">
         <Topbar requestCount={requestCount} />
@@ -38,7 +40,7 @@ export default function AppLayout() {
         </main>
       </div>
 
-      <MobileNavbar />
+      <MobileNavbar unreadCount={totalUnread} />
     </div>
   );
 }

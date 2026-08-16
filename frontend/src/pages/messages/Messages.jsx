@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MessageSquare, Info, Wifi, WifiOff } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  MessageSquare,
+  Info,
+  Wifi,
+  WifiOff,
+  Flame,
+  BookOpen,
+} from "lucide-react";
 
 import PageTransition from "../../components/layout/PageTransition";
 import ConversationList from "../../components/chat/ConversationList";
@@ -11,33 +20,22 @@ import Avatar from "../../components/ui/Avatar";
 import EmptyState from "../../components/ui/EmptyState";
 import Loader from "../../components/ui/Loader";
 
-import useAuth from "../../hooks/useAuth";
-import useFriends from "../../hooks/useFriends";
+import useConversations from "../../hooks/useConversations";
 import useChat from "../../hooks/useChat";
-import { getConversationMap } from "../../utils/storage";
 
 /**
  * Messages.
  *
  * Mobile is two screens — the list, then the thread — driven by the route.
- * Desktop shows both side by side, per the chat workspace design.
+ * Desktop shows list, thread, and a context panel side by side, per the
+ * chat workspace design.
  */
 export default function Messages() {
   const { conversationId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { friends, loading: friendsLoading } = useFriends({ includeRequests: false });
 
+  const { conversations, loading, markRead } = useConversations();
   const [query, setQuery] = useState("");
-
-  // Friends joined to whatever conversation ids we know about.
-  const conversations = useMemo(() => {
-    const map = getConversationMap(user?.userId);
-    return friends.map((friend) => ({
-      ...friend,
-      conversationId: map[String(friend._id)] ?? null,
-    }));
-  }, [friends, user?.userId]);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -46,18 +44,25 @@ export default function Messages() {
   }, [conversations, query]);
 
   const active = conversations.find((c) => c.conversationId === conversationId) ?? null;
-  const { messages, loading, error, connected, send, myId } = useChat(conversationId);
+  const { messages, loading: chatLoading, error, connected, send, myId } =
+    useChat(conversationId);
 
-  // A conversation id in the URL that doesn't match any friend is stale.
+  // Opening a thread clears its unread count; so does each new message
+  // arriving while it's open.
   useEffect(() => {
-    if (conversationId && !friendsLoading && !active) {
+    if (conversationId) markRead(conversationId);
+  }, [conversationId, messages.length, markRead]);
+
+  // A conversation id in the URL that matches no friend is stale.
+  useEffect(() => {
+    if (conversationId && !loading && !active) {
       navigate("/messages", { replace: true });
     }
-  }, [conversationId, friendsLoading, active, navigate]);
+  }, [conversationId, loading, active, navigate]);
 
-  const openable = conversations.filter((c) => c.conversationId).length;
+  const lockedCount = conversations.filter((c) => !c.conversationId).length;
 
-  if (friendsLoading) {
+  if (loading) {
     return (
       <PageTransition>
         <Loader message="Finding your people…" />
@@ -65,7 +70,7 @@ export default function Messages() {
     );
   }
 
-  if (!friends.length) {
+  if (!conversations.length) {
     return (
       <PageTransition className="mx-auto max-w-5xl">
         <EmptyState
@@ -82,13 +87,13 @@ export default function Messages() {
   const showThreadOnMobile = Boolean(conversationId);
 
   return (
-    <PageTransition className="mx-auto max-w-7xl">
-      <div className="lg:grid lg:h-[calc(100vh-10rem)] lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-8">
+    <PageTransition className="mx-auto max-w-[90rem]">
+      <div className="lg:grid lg:h-[calc(100vh-9rem)] lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[20rem_minmax(0,1fr)_17rem]">
         {/* ---------- Conversation list ---------- */}
         <section
           className={`flex min-h-0 flex-col ${showThreadOnMobile ? "hidden lg:flex" : "flex"}`}
         >
-          <header className="mb-6 px-margin-mobile md:px-6">
+          <header className="mb-5 px-margin-mobile md:px-0">
             <motion.h1
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
@@ -99,14 +104,13 @@ export default function Messages() {
             </motion.h1>
           </header>
 
-          {/* Honest about the id gap rather than silently hiding people. */}
-          {openable < conversations.length && (
-            <p className="mx-margin-mobile mb-5 flex items-start gap-2.5 border-l-2 border-secondary bg-secondary-fixed/40 px-4 py-3 font-annotation text-xs leading-relaxed text-secondary md:mx-6">
+          {lockedCount > 0 && (
+            <p className="mx-margin-mobile mb-4 flex items-start gap-2.5 border-l-2 border-secondary bg-secondary-fixed/40 px-3.5 py-2.5 font-annotation text-[11px] leading-relaxed text-secondary md:mx-0">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2.4} />
               <span>
-                Some chats can&rsquo;t open yet — the API doesn&rsquo;t return a
-                conversation id for friendships made before now. New friends
-                you add or accept will work.
+                {lockedCount} chat{lockedCount === 1 ? "" : "s"} can&rsquo;t open —
+                the API gives no conversation id for friendships made before now.
+                New friends work.
               </span>
             </p>
           )}
@@ -123,7 +127,7 @@ export default function Messages() {
 
         {/* ---------- Thread ---------- */}
         <section
-          className={`flex min-h-0 flex-col lg:border-l lg:border-outline-variant/60 ${
+          className={`flex min-h-0 flex-col lg:border-x lg:border-outline-variant/60 ${
             showThreadOnMobile ? "flex" : "hidden lg:flex"
           }`}
         >
@@ -162,12 +166,14 @@ export default function Messages() {
                   </p>
                 </div>
 
-                <Avatar
-                  username={active.username}
-                  size="sm"
-                  active={active.wroteToday}
-                  className="shrink-0 rounded-full"
-                />
+                <Link to={`/friends/${active._id}`} className="shrink-0 xl:hidden">
+                  <Avatar
+                    username={active.username}
+                    size="sm"
+                    active={active.wroteToday}
+                    className="rounded-full"
+                  />
+                </Link>
               </header>
 
               {error ? (
@@ -177,7 +183,7 @@ export default function Messages() {
                   </p>
                 </div>
               ) : (
-                <MessageThread messages={messages} loading={loading} myId={myId} />
+                <MessageThread messages={messages} loading={chatLoading} myId={myId} />
               )}
 
               <ChatComposer onSend={send} disabled={Boolean(error)} />
@@ -196,6 +202,74 @@ export default function Messages() {
             </div>
           )}
         </section>
+
+        {/* ---------- Context panel (widest screens only) ---------- */}
+        <aside className="hidden min-h-0 flex-col overflow-y-auto pt-4 xl:flex">
+          {active ? (
+            <div className="flex flex-col items-center px-4 text-center">
+              <Avatar
+                username={active.username}
+                size="2xl"
+                active={active.wroteToday}
+                className="rounded-full"
+              />
+
+              <h3 className="mt-5 font-journal text-2xl font-bold tracking-tight">
+                {active.username}
+              </h3>
+
+              <p
+                className={`mt-1.5 flex items-center gap-1.5 font-display text-[10px] font-bold uppercase tracking-[0.1em] ${
+                  active.wroteToday ? "text-tertiary" : "text-on-surface-variant/50"
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    active.wroteToday ? "bg-tertiary-bright" : "bg-on-surface-variant/40"
+                  }`}
+                />
+                {active.wroteToday ? "Wrote today" : "Hasn't written today"}
+              </p>
+
+              <div className="mt-7 grid w-full grid-cols-2 gap-3">
+                {[
+                  { value: active.streak ?? 0, label: "Day streak", icon: Flame },
+                  { value: messages.length, label: "Messages", icon: MessageSquare },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-lg border border-outline-variant/60 bg-surface-lowest px-3 py-4"
+                  >
+                    <stat.icon
+                      className="mx-auto mb-2 h-3.5 w-3.5 text-primary"
+                      strokeWidth={2.4}
+                    />
+                    <p className="font-display text-2xl font-extrabold leading-none tabular-nums text-primary">
+                      {stat.value}
+                    </p>
+                    <p className="label-caps mt-1.5 text-on-surface-variant/60">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                to={`/friends/${active._id}`}
+                className="group mt-6 flex w-full items-center justify-between rounded-lg border border-outline-variant px-4 py-3 font-display text-label-caps uppercase transition-colors hover:border-primary hover:text-primary"
+              >
+                <span className="flex items-center gap-2">
+                  <BookOpen className="h-3.5 w-3.5" strokeWidth={2.4} />
+                  Their journal
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                  strokeWidth={2.6}
+                />
+              </Link>
+            </div>
+          ) : null}
+        </aside>
       </div>
     </PageTransition>
   );

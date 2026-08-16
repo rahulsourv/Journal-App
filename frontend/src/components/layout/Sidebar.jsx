@@ -26,13 +26,15 @@ export const NAV_ITEMS = [
   { to: "/profile", label: "Profile", icon: CircleUser },
 ];
 
-function NavItem({ item, requestCount }) {
+function NavItem({ item, requestCount, unreadCount }) {
   const location = useLocation();
   const isActive = item.end
     ? location.pathname === item.to
     : location.pathname.startsWith(item.to);
 
-  const showCount = item.to === "/requests" && requestCount > 0;
+  const count =
+    item.to === "/requests" ? requestCount : item.to === "/messages" ? unreadCount : 0;
+  const showCount = count > 0;
 
   return (
     <NavLink
@@ -70,14 +72,14 @@ function NavItem({ item, requestCount }) {
 
       {showCount && (
         <Badge tone="primary" size="sm" className="relative z-10">
-          {requestCount}
+          {count}
         </Badge>
       )}
     </NavLink>
   );
 }
 
-export default function Sidebar({ requestCount = 0 }) {
+export default function Sidebar({ requestCount = 0, unreadCount = 0 }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -114,7 +116,12 @@ export default function Sidebar({ requestCount = 0 }) {
 
         <nav className="flex flex-1 flex-col gap-0.5 px-3" aria-label="Main">
           {NAV_ITEMS.map((item) => (
-            <NavItem key={item.to} item={item} requestCount={requestCount} />
+            <NavItem
+              key={item.to}
+              item={item}
+              requestCount={requestCount}
+              unreadCount={unreadCount}
+            />
           ))}
         </nav>
 

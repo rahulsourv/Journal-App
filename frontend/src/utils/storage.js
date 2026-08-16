@@ -98,6 +98,40 @@ export function getConversationMap(ownerId) {
   return readConversations()?.[String(ownerId)] ?? {};
 }
 
+/**
+ * Last-read timestamps, for unread counts.
+ *
+ * The Message model has no read state, so "unread" can only be tracked on
+ * the client: the moment a thread is opened is recorded, and anything newer
+ * from the other person counts as unread.
+ */
+const READ_KEY = "daymark_last_read";
+
+function readReceipts() {
+  const raw = safeGet(READ_KEY);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    safeRemove(READ_KEY);
+    return {};
+  }
+}
+
+export function getLastRead(ownerId, conversationId) {
+  if (!ownerId || !conversationId) return 0;
+  return readReceipts()?.[String(ownerId)]?.[String(conversationId)] ?? 0;
+}
+
+export function setLastRead(ownerId, conversationId, when = Date.now()) {
+  if (!ownerId || !conversationId) return;
+  const all = readReceipts();
+  const mine = all[String(ownerId)] ?? {};
+  mine[String(conversationId)] = when;
+  all[String(ownerId)] = mine;
+  safeSet(READ_KEY, JSON.stringify(all));
+}
+
 export function clearSession() {
   clearToken();
   clearUser();
