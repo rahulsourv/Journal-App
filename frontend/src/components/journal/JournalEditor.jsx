@@ -2,10 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CalendarDays, Flame, Check, Loader2 } from "lucide-react";
 import JournalVisibility from "./JournalVisibility";
+import MarkdownToolbar from "./MarkdownToolbar";
+import Markdown from "../ui/Markdown";
 import Button from "../ui/Button";
 import SunMark from "../ui/SunMark";
 import { formatDateline } from "../../utils/formatDate";
 import { wordCount } from "../../utils/formatDate";
+import {
+  toggleWrap,
+  togglePrefix,
+  insertLink,
+  stripMarkdown,
+} from "../../utils/markdown";
 
 /**
  * A premium digital notebook: paper texture, faint rules, large serif type.
@@ -27,34 +35,149 @@ export default function JournalEditor({
 }) {
   const [content, setContent] = useState(initialContent);
   const [isPublic, setIsPublic] = useState(initialIsPublic);
+  const [preview, setPreview] = useState(false);
   const textareaRef = useRef(null);
+
+  // Undo/redo history. The textarea's native stack can't be used, because a
+  // toolbar action replaces `value` through React rather than typing into the
+  // element, which the browser doesn't record as an undoable step.
+  const history = useRef({ past: [], future: [] });
+  const [historySize, setHistorySize] = useState({ past: 0, future: 0 });
+
+  const syncHistorySize = () =>
+    setHistorySize({
+      past: history.current.past.length,
+      future: history.current.future.length,
+    });
 
   useEffect(() => {
     setContent(initialContent);
     setIsPublic(initialIsPublic);
+    history.current = { past: [], future: [] };
+    syncHistorySize();
   }, [initialContent, initialIsPublic]);
 
   // Grow the textarea with its content — no inner scrollbar while writing.
   useEffect(() => {
     const el = textareaRef.current;
-    if (!el) return;
+    if (!el || preview) return;
     el.style.height = "auto";
     el.style.height = `${Math.max(el.scrollHeight, 420)}px`;
-  }, [content]);
+  }, [content, preview]);
 
-  // Cmd/Ctrl+Enter saves without reaching for the mouse.
+  /** Commit a new value, recording the previous one for undo. */
+  const commit = (next, selection) => {
+    history.current.past.push(content);
+    history.current.future = [];
+    syncHistorySize();
+    setContent(next);
+
+    if (selection) {
+      // Restore the selection once React has flushed the new value, so a
+      // second action applies to the same range instead of a collapsed caret.
+      //
+      // A timer rather than requestAnimationFrame: rAF is paused in
+      // background tabs, and if it never fires the selection collapses —
+      // which silently turns "quote these three lines" into "quote the last
+      // line". setTimeout still runs either way.
+      setTimeout(() => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.focus();
+        el.setSelectionRange(selection.start, selection.end);
+      }, 0);
+    }
+  };
+
+  const undo = () => {
+    const { past, future } = history.current;
+    if (!past.length) return;
+    future.push(content);
+    setContent(past.pop());
+    syncHistorySize();
+  };
+
+  const redo = () => {
+    const { past, future } = history.current;
+    if (!future.length) return;
+    past.push(content);
+    setContent(future.pop());
+    syncHistorySize();
+  };
+
+  /** Run a toolbar action against the current selection. */
+  const applyAction = (id) => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+
+    const result = (() => {
+      switch (id) {
+        case "bold":
+          return toggleWrap(content, start, end, "**");
+        case "italic":
+          return toggleWrap(content, start, end, "*");
+        case "code":
+          return toggleWrap(content, start, end, "`");
+        case "h1":
+          return togglePrefix(content, start, end, "# ");
+        case "h2":
+          return togglePrefix(content, start, end, "## ");
+        case "quote":
+          return togglePrefix(content, start, end, "> ");
+        case "ul":
+          return togglePrefix(content, start, end, "- ");
+        case "ol":
+          return togglePrefix(content, start, end, "", { ordered: true });
+        case "link":
+          return insertLink(content, start, end);
+        default:
+          return null;
+      }
+    })();
+
+    if (result) commit(result.value, { start: result.start, end: result.end });
+  };
+
+  // Cmd/Ctrl+Enter saves; the usual formatting shortcuts also work.
   useEffect(() => {
     const onKeyDown = (event) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      const mod = event.metaKey || event.ctrlKey;
+      if (!mod) return;
+
+      if (event.key === "Enter") {
         event.preventDefault();
         if (content.trim() && !saving) onSave?.({ content: content.trim(), isPublic });
+        return;
+      }
+
+      // Only intercept the rest while the editor itself has focus, so these
+      // don't hijack the shortcut anywhere else on the page.
+      if (document.activeElement !== textareaRef.current) return;
+
+      const key = event.key.toLowerCase();
+      const map = { b: "bold", i: "italic", k: "link" };
+
+      if (map[key]) {
+        event.preventDefault();
+        applyAction(map[key]);
+      } else if (key === "z") {
+        event.preventDefault();
+        if (event.shiftKey) redo();
+        else undo();
       }
     };
+
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+    // applyAction/undo/redo close over `content`, which is in the deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, isPublic, saving, onSave]);
 
-  const words = wordCount(content);
+  // Count the words the reader will see, not the Markdown syntax around them.
+  const words = wordCount(stripMarkdown(content));
   const canSave = content.trim().length > 0 && !saving && !saved;
 
   // "Sunday, August 16" — the mobile design leads with the date as a headline.
@@ -106,18 +229,40 @@ export default function JournalEditor({
           <h2 className="mb-2 font-journal text-[1.5rem] font-bold italic leading-tight lg:text-[2.5rem] lg:not-italic">
             Dear today,
           </h2>
-          <div className="mb-6 h-px w-full bg-outline-variant lg:mb-8" />
 
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Start where you are. Nobody is grading this."
-            aria-label="Today's journal entry"
-            spellCheck
-            className="ruled-paper w-full resize-none border-0 bg-transparent p-0 font-journal text-journal-body leading-[40px] text-on-surface placeholder:text-on-surface-variant/35 focus:ring-0"
-            style={{ minHeight: 420 }}
+          <MarkdownToolbar
+            onAction={applyAction}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={historySize.past > 0}
+            canRedo={historySize.future > 0}
+            preview={preview}
+            onTogglePreview={() => setPreview((p) => !p)}
+            disabled={saving || saved}
           />
+
+          {preview ? (
+            <div className="mt-6 min-h-[420px] lg:mt-8">
+              {content.trim() ? (
+                <Markdown>{content}</Markdown>
+              ) : (
+                <p className="font-journal text-journal-body italic text-on-surface-variant/40">
+                  Nothing to preview yet.
+                </p>
+              )}
+            </div>
+          ) : (
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start where you are. Nobody is grading this.&#10;&#10;**bold**, *italic*, # heading, - list"
+              aria-label="Today's journal entry"
+              spellCheck
+              className="mt-6 w-full resize-none border-0 bg-transparent p-0 font-journal text-journal-body leading-[1.8] text-on-surface placeholder:text-on-surface-variant/35 focus:ring-0 lg:mt-8"
+              style={{ minHeight: 420 }}
+            />
+          )}
         </div>
       </motion.div>
 

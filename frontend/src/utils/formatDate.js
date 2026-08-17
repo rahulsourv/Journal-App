@@ -1,4 +1,5 @@
 import { toISTWallClock, istParts, diffISTDays } from "./dateUtils";
+import { stripMarkdown } from "./markdown";
 
 const WEEKDAYS = [
   "Sunday",
@@ -101,9 +102,15 @@ export function formatISTTime(date) {
   return `${display}:${minutes} ${period}`;
 }
 
-/** Trim journal content to a preview without cutting mid-word. */
+/**
+ * Trim journal content to a preview without cutting mid-word.
+ *
+ * Entries are Markdown, so the syntax is removed first — a card preview
+ * reading "## My Day - Went to **college**" would expose the markup the
+ * reader is meant never to see.
+ */
 export function excerpt(text = "", max = 180) {
-  const clean = text.replace(/\s+/g, " ").trim();
+  const clean = stripMarkdown(text).replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   const cut = clean.slice(0, max);
   return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
@@ -114,7 +121,7 @@ export function wordCount(text = "") {
   return trimmed ? trimmed.split(/\s+/).length : 0;
 }
 
-/** Rough reading time, floored at one minute. */
+/** Rough reading time, floored at one minute. Counts prose, not syntax. */
 export function readingTime(text = "") {
-  return Math.max(1, Math.round(wordCount(text) / 200));
+  return Math.max(1, Math.round(wordCount(stripMarkdown(text)) / 200));
 }

@@ -5,6 +5,7 @@ import { X, Globe, EyeOff, Clock, ArrowRight, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import Avatar from "../ui/Avatar";
 import Badge from "../ui/Badge";
+import Markdown from "../ui/Markdown";
 import SunMark from "../ui/SunMark";
 import {
   formatLong,
@@ -12,6 +13,7 @@ import {
   readingTime,
   wordCount,
 } from "../../utils/formatDate";
+import { stripMarkdown } from "../../utils/markdown";
 
 /**
  * Full-entry reader.
@@ -130,25 +132,17 @@ export default function JournalReaderModal({
         <div className="relative z-10 px-6 py-9 md:px-14 md:py-12">
           <SunMark className="pointer-events-none absolute right-5 top-5 h-8 w-8 text-outline-variant/30" />
 
-          <div className="font-journal text-journal-body leading-[1.85] text-on-surface">
-            {journal.content
-              .split(/\n{2,}/)
-              .filter(Boolean)
-              .map((paragraph, i) => (
-                <motion.p
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.08 + i * 0.06 }}
-                  className={i > 0 ? "mt-6" : ""}
-                >
-                  {paragraph}
-                </motion.p>
-              ))}
-          </div>
+          {/* Entries are Markdown; render them formatted rather than raw. */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.08 }}
+          >
+            <Markdown>{journal.content}</Markdown>
+          </motion.div>
 
           <p className="mt-9 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-outline-variant/50 pt-5 font-annotation text-[11px] tracking-[0.12em] text-on-surface-variant/50">
-            <span>{wordCount(journal.content)} words</span>
+            <span>{wordCount(stripMarkdown(journal.content))} words</span>
             <span>{readingTime(journal.content)} min read</span>
             {edited && <span className="italic">Edited {formatISTTime(journal.updatedAt)} IST</span>}
           </p>

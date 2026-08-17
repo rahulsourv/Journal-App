@@ -7,6 +7,7 @@ import Badge from "../ui/Badge";
 import { excerpt, formatRelative, formatShort, readingTime } from "../../utils/formatDate";
 import { paperDrop } from "../../animations/staggerAnimations";
 import { accentFor } from "../../utils/constants";
+import { stripMarkdown } from "../../utils/markdown";
 
 /**
  * A single journal entry.
@@ -31,8 +32,10 @@ const JournalCard = forwardRef(function JournalCard(
   const username = authorName ?? author?.username ?? "";
   const accent = accentFor(username || journal._id);
 
-  // 300 is the excerpt limit, so anything longer is genuinely being cut off.
-  const isTruncated = journal.content.length > 300;
+  // 300 is the excerpt limit. Measured after stripping Markdown, since the
+  // excerpt is too — otherwise syntax-heavy entries would claim to be
+  // truncated when the visible text actually fits.
+  const isTruncated = stripMarkdown(journal.content).length > 300;
 
   const Wrapper = onClick ? "button" : to ? Link : "div";
   const wrapperProps = onClick

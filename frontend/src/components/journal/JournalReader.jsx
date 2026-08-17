@@ -3,6 +3,7 @@ import { Globe, EyeOff, Clock, Pencil } from "lucide-react";
 import Avatar from "../ui/Avatar";
 import Badge from "../ui/Badge";
 import Button from "../ui/Button";
+import Markdown from "../ui/Markdown";
 import SunMark from "../ui/SunMark";
 import {
   formatLong,
@@ -10,6 +11,7 @@ import {
   readingTime,
   wordCount,
 } from "../../utils/formatDate";
+import { stripMarkdown } from "../../utils/markdown";
 
 /**
  * Full-entry reading view — a single column of large serif text with wide
@@ -53,7 +55,7 @@ export default function JournalReader({ journal, author, onEdit, canEdit = false
                   <Clock className="h-3 w-3" strokeWidth={2.4} />
                   {formatISTTime(journal.createdAt)} IST
                 </span>
-                <span>{wordCount(journal.content)} words</span>
+                <span>{wordCount(stripMarkdown(journal.content))} words</span>
                 <span>{readingTime(journal.content)} min read</span>
               </p>
             </div>
@@ -80,22 +82,14 @@ export default function JournalReader({ journal, author, onEdit, canEdit = false
       <div className="relative bg-surface-lowest px-7 py-10 shadow-paper md:px-14 md:py-14">
         <SunMark className="pointer-events-none absolute right-6 top-6 h-9 w-9 text-outline-variant/35" />
 
-        <div className="font-journal text-journal-body leading-[1.85] text-on-surface">
-          {journal.content
-            .split(/\n{2,}/)
-            .filter(Boolean)
-            .map((paragraph, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.1 + i * 0.08 }}
-                className={i > 0 ? "mt-6" : ""}
-              >
-                {paragraph}
-              </motion.p>
-            ))}
-        </div>
+        {/* Entries are Markdown; render them formatted rather than raw. */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+        >
+          <Markdown>{journal.content}</Markdown>
+        </motion.div>
       </div>
 
       {edited && (
