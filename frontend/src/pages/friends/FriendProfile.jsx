@@ -114,14 +114,13 @@ export default function FriendProfile() {
           className="relative"
         >
           <Avatar username={username} size="2xl" active={friend?.wroteToday} />
-          <span className="washi -bottom-2 -right-4 h-7 w-24 rotate-[-6deg] bg-secondary-container/80" />
           <span className="absolute -bottom-2 -right-4 rotate-[-6deg] px-2 py-1 font-display text-[11px] font-bold text-on-secondary">
             @{username}
           </span>
         </motion.div>
 
         <div className="min-w-0 flex-1">
-          <h1 className="font-display text-[2.5rem] font-extrabold uppercase leading-none tracking-[-0.03em] md:text-6xl">
+          <h1 className="font-display text-[1.9rem] font-bold uppercase leading-tight tracking-[-0.02em] md:text-4xl">
             {username}
           </h1>
 
@@ -145,7 +144,7 @@ export default function FriendProfile() {
 
       {/* Today, gated */}
       <section className="mb-14">
-        <h2 className="mb-6 font-display text-2xl font-extrabold uppercase tracking-tight">
+        <h2 className="mb-6 font-display text-xl font-bold uppercase tracking-tight">
           Today
         </h2>
 
@@ -155,7 +154,7 @@ export default function FriendProfile() {
               <Lock className="h-6 w-6" strokeWidth={2.2} />
             </span>
 
-            <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight">
+            <h3 className="font-display text-xl font-bold uppercase tracking-tight">
               Write yours first.
             </h3>
             <p className="mx-auto mt-4 max-w-sm font-journal text-journal-body italic text-on-surface-variant">
@@ -191,7 +190,7 @@ export default function FriendProfile() {
       <SunDivider className="mb-14" />
 
       <section>
-        <h2 className="mb-8 font-display text-2xl font-extrabold uppercase tracking-tight">
+        <h2 className="mb-8 font-display text-xl font-bold uppercase tracking-tight">
           Earlier
         </h2>
 

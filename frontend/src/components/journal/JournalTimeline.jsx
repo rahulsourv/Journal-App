@@ -61,9 +61,6 @@ export default function JournalTimeline({
                 aria-hidden="true"
               />
               <span className="relative">
-                {today && (
-                  <span className="washi -left-1 -top-0.5 h-6 w-full rotate-[-2deg] bg-primary-fixed/80" />
-                )}
                 <span className="relative font-display text-label-caps uppercase tracking-[0.12em] text-on-surface">
                   {month} {day}
                 </span>

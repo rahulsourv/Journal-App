@@ -85,7 +85,6 @@ export default function JournalReaderModal({
         aria-label={`Entry by ${author ?? "you"}`}
         className="relative z-10 w-full max-w-3xl bg-surface-lowest shadow-paper-lg grain-panel"
       >
-        <span className="washi -left-3 -top-3 h-8 w-28 rotate-[-5deg] bg-tertiary-bright/50" />
 
         {/* Header */}
         <header className="relative z-10 flex flex-wrap items-start justify-between gap-4 border-b border-outline-variant/60 px-6 py-5 md:px-10">

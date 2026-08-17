@@ -27,7 +27,7 @@ export default function NotFound() {
 
         <p className="label-caps mb-5 text-primary">Error 404</p>
 
-        <h1 className="font-display text-[2.5rem] font-extrabold uppercase leading-[0.9] tracking-[-0.035em] md:text-6xl">
+        <h1 className="font-display text-[1.9rem] font-bold uppercase leading-tight tracking-[-0.02em] md:text-4xl">
           This page
           <br />
           was never written.

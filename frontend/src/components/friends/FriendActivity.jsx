@@ -18,7 +18,7 @@ export default function FriendActivity({ friends = [], loading = false, classNam
     <section className={className}>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight md:text-3xl">
+          <h2 className="font-display text-xl font-bold uppercase tracking-tight md:text-2xl">
             Your people
           </h2>
           <p className="mt-1.5 font-annotation text-xs tracking-[0.12em] text-on-surface-variant/55">

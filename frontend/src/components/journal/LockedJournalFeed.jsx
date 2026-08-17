@@ -1,9 +1,7 @@
-import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, PenLine, ArrowRight } from "lucide-react";
 import Button from "../ui/Button";
-import { driftDecor } from "../../animations/gsapAnimations";
 
 /**
  * The gate.
@@ -50,20 +48,10 @@ function DecoyCard({ lines, index }) {
 
 export default function LockedJournalFeed({ friendCount = 0, className = "" }) {
   const navigate = useNavigate();
-  const decorRef = useRef([]);
-
-  useEffect(() => {
-    const timeline = driftDecor(decorRef.current.filter(Boolean), {
-      amplitude: 16,
-      duration: 11,
-    });
-    return () => timeline?.kill();
-  }, []);
-
   return (
     <section className={`relative ${className}`}>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-        <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight md:text-4xl">
+        <h2 className="font-display text-xl font-bold uppercase tracking-tight md:text-2xl">
           Their words are waiting.
         </h2>
         <p className="font-journal text-[15px] italic text-on-surface-variant/70">
@@ -80,40 +68,20 @@ export default function LockedJournalFeed({ friendCount = 0, className = "" }) {
         </div>
 
         {/* Frosted lock layer */}
-        <div className="absolute inset-0 flex items-center justify-center bg-surface/70 frost">
-          <div
-            className="pointer-events-none absolute inset-0 overflow-hidden"
-            aria-hidden="true"
-          >
-            <div
-              ref={(el) => (decorRef.current[0] = el)}
-              className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-primary-fixed/40 blur-3xl"
-            />
-            <div
-              ref={(el) => (decorRef.current[1] = el)}
-              className="absolute -right-8 bottom-8 h-52 w-52 rounded-full bg-secondary-fixed/40 blur-3xl"
-            />
-          </div>
-
+        <div className="absolute inset-0 flex items-center justify-center bg-surface/75 frost">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-10 max-w-md px-6 py-16 text-center"
           >
-            {/* the lock, with a slow breathing ring */}
-            <div className="relative mx-auto mb-8 grid h-20 w-20 place-items-center">
-              <motion.span
-                className="absolute inset-0 rounded-full border-2 border-primary/25"
-                animate={{ scale: [1, 1.45, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: "easeOut" }}
-              />
-              <span className="relative grid h-16 w-16 place-items-center border-2 border-primary bg-surface-lowest text-primary">
-                <Lock className="h-7 w-7" strokeWidth={2.2} />
-              </span>
+            {/* The lock. Previously ringed by a looping pulse — the gate is
+                already clear from the blur and the copy, so it sits still. */}
+            <div className="mx-auto mb-8 grid h-16 w-16 place-items-center rounded-lg border border-primary/50 bg-surface-lowest text-primary">
+              <Lock className="h-6 w-6" strokeWidth={2} />
             </div>
 
-            <h3 className="font-display text-3xl font-extrabold uppercase leading-none tracking-tight md:text-4xl">
+            <h3 className="font-display text-2xl font-bold uppercase leading-tight tracking-tight md:text-3xl">
               Write yours first.
             </h3>
 

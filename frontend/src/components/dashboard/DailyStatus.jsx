@@ -61,7 +61,7 @@ export default function DailyStatus({ journal, onReadFriends, className = "" }) 
             </motion.span>
 
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-[1.75rem] font-extrabold uppercase leading-[1.05] tracking-tight md:text-[2.1rem]">
+              <h2 className="font-display text-[1.4rem] font-bold uppercase leading-tight tracking-tight md:text-[1.7rem]">
                 {marked ? (
                   <>
                     Today is marked{" "}

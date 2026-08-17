@@ -39,7 +39,7 @@ export default function JournalReader({ journal, author, onEdit, canEdit = false
           {formatLong(journal.journalDate)}
         </p>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-on-surface pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant pb-6">
           <div className="flex items-center gap-3.5">
             {username && <Avatar username={username} size="md" />}
             <div>

@@ -103,10 +103,10 @@ export default function Dashboard() {
                 Today unlocked
               </span>
 
-              <h2 className="font-display text-[2.25rem] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] md:text-6xl">
+              <h2 className="font-display text-[1.9rem] font-bold uppercase leading-tight tracking-[-0.02em] md:text-4xl">
                 Their day,
                 <br />
-                <span className="font-journal text-[2.5rem] font-bold normal-case italic text-primary md:text-[4.2rem]">
+                <span className="font-journal text-[2rem] font-bold normal-case italic text-primary md:text-[2.75rem]">
                   in fragments.
                 </span>
               </h2>

@@ -23,11 +23,11 @@ function Stat({ value, label, sublabel, accent = "primary", suffix = "" }) {
   return (
     <motion.div
       variants={staggerItem}
-      className="relative border-t-2 border-on-surface pt-5"
+      className="relative border-t border-outline-variant pt-5"
     >
       <div className="flex items-baseline gap-1">
         <span
-          className={`font-display text-5xl font-extrabold leading-none tracking-[-0.04em] tabular-nums md:text-6xl ${accentClass}`}
+          className={`font-display text-4xl font-bold leading-none tracking-[-0.03em] tabular-nums md:text-5xl ${accentClass}`}
         >
           {shown}
         </span>

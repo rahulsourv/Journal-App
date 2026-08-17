@@ -40,7 +40,7 @@ export default function Profile() {
 
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-gutter">
         <section>
-          <h2 className="mb-8 font-display text-2xl font-extrabold uppercase tracking-tight">
+          <h2 className="mb-8 font-display text-xl font-bold uppercase tracking-tight">
             Recent activity
           </h2>
 
@@ -53,7 +53,7 @@ export default function Profile() {
               variants={staggerContainer(0.07)}
               initial="initial"
               animate="animate"
-              className="divide-y divide-outline-variant/50 border-t-2 border-on-surface"
+              className="divide-y divide-outline-variant/50 border-t border-outline-variant"
             >
               {recent.map((journal) => (
                 <motion.li key={journal._id} variants={staggerItem}>

@@ -39,11 +39,6 @@ export default function Friends() {
   return (
     <PageTransition className="mx-auto max-w-7xl">
       <header className="relative mb-9 lg:mb-12">
-        {/* washi tape stuck above the headline, as in the mobile design */}
-        <span
-          className="washi -top-3 left-0 h-6 w-16 -rotate-3 bg-primary-fixed/80 lg:hidden"
-          aria-hidden="true"
-        />
         <span
           className="watermark absolute -left-3 -top-8 hidden text-[10rem] lg:block"
           aria-hidden="true"
@@ -56,7 +51,7 @@ export default function Friends() {
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="font-display text-[2.25rem] font-extrabold uppercase leading-none tracking-[-0.035em] sm:text-6xl lg:text-7xl"
+            className="font-display text-[2rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] sm:text-4xl lg:text-5xl"
           >
             Your people.
           </motion.h1>

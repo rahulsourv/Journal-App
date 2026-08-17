@@ -89,7 +89,7 @@ export default function Discover() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55 }}
-          className="font-display text-[2.75rem] font-extrabold uppercase leading-none tracking-[-0.035em] sm:text-6xl lg:text-7xl"
+          className="font-display text-[2rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] sm:text-4xl lg:text-5xl"
         >
           Find your
           <br />
@@ -111,7 +111,7 @@ export default function Discover() {
           </Button>
         </div>
 
-        <div className="mt-7 h-0.5 w-full bg-on-surface" />
+        <div className="mt-7 h-px w-full bg-outline-variant" />
       </header>
 
       {error ? (

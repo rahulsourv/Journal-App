@@ -38,11 +38,11 @@ export default function StreakCard({ streak = 0, journals = [], className = "" }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-display text-[4.5rem] font-extrabold leading-[0.82] tracking-[-0.05em] text-primary tabular-nums"
+            className="font-display text-5xl font-bold leading-none tracking-[-0.03em] text-primary tabular-nums"
           >
             {shown}
           </motion.span>
-          <span className="pb-2 font-display text-xl font-extrabold uppercase leading-none tracking-tight">
+          <span className="pb-1.5 font-display text-base font-bold uppercase leading-tight tracking-tight">
             Day
             <br />
             Streak

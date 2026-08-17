@@ -60,9 +60,10 @@ export default {
       },
 
       fontSize: {
-        "display-xl": ["80px", { lineHeight: "84px", letterSpacing: "-0.04em", fontWeight: "800" }],
-        "display-lg": ["48px", { lineHeight: "52px", letterSpacing: "-0.02em", fontWeight: "800" }],
-        "display-md": ["36px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }],
+        // Display sizes pulled in a step: the old scale shouted on every page.
+        "display-xl": ["56px", { lineHeight: "60px", letterSpacing: "-0.03em", fontWeight: "800" }],
+        "display-lg": ["40px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "display-md": ["30px", { lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "700" }],
         "journal-body": ["20px", { lineHeight: "32px", fontWeight: "400" }],
         "journal-quote": ["28px", { lineHeight: "38px", fontWeight: "600" }],
         annotation: ["16px", { lineHeight: "20px", fontWeight: "600" }],
@@ -89,13 +90,15 @@ export default {
       },
 
       boxShadow: {
-        // Hard/offset "stacked cardstock" shadows — never soft blurs.
-        paper: "4px 4px 0 0 rgb(var(--shadow-hard) / 0.22)",
-        "paper-sm": "2px 2px 0 0 rgb(var(--shadow-hard) / 0.20)",
-        "paper-lg": "8px 8px 0 0 rgb(var(--shadow-hard) / 0.18)",
-        press: "3px 3px 0 0 rgb(var(--on-surface) / 0.9)",
-        "press-primary": "4px 4px 0 0 rgb(var(--shadow-hard) / 0.45)",
-        lifted: "0 18px 40px -24px rgb(var(--shadow-hard) / 0.55)",
+        // Offset "stacked cardstock" shadows. Kept hard-edged — that's the
+        // material language — but much lighter than before, so cards read as
+        // paper on paper instead of as outlined stickers.
+        paper: "2px 2px 0 0 rgb(var(--shadow-hard) / 0.10)",
+        "paper-sm": "1px 1px 0 0 rgb(var(--shadow-hard) / 0.09)",
+        "paper-lg": "3px 3px 0 0 rgb(var(--shadow-hard) / 0.10)",
+        press: "2px 2px 0 0 rgb(var(--on-surface) / 0.55)",
+        "press-primary": "2px 2px 0 0 rgb(var(--shadow-hard) / 0.22)",
+        lifted: "0 14px 32px -22px rgb(var(--shadow-hard) / 0.35)",
       },
 
       keyframes: {

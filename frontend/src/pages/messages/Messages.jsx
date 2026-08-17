@@ -95,7 +95,7 @@ export default function Messages() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="font-journal text-[2.5rem] font-bold leading-none tracking-tight lg:text-5xl"
+              className="font-journal text-[1.9rem] font-bold leading-tight tracking-tight lg:text-4xl"
             >
               Messages
             </motion.h1>
@@ -179,7 +179,7 @@ export default function Messages() {
               <span className="mb-6 grid h-16 w-16 place-items-center border-2 border-outline-variant/70 text-on-surface-variant/45">
                 <MessageSquare className="h-7 w-7" strokeWidth={1.6} />
               </span>
-              <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight">
+              <h3 className="font-display text-xl font-bold uppercase tracking-tight">
                 Pick someone to write to.
               </h3>
               <p className="mt-3 max-w-xs font-journal text-[17px] italic text-on-surface-variant/70">

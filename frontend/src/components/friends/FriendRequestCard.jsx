@@ -40,7 +40,6 @@ const FriendRequestCard = forwardRef(function FriendRequestCard(
       exit={resolving === "reject" ? dismissCard(-1) : dismissCard(1)}
       className="relative overflow-hidden paper grain-panel"
     >
-      <span className="washi -left-3 top-5 h-6 w-20 rotate-[-5deg] bg-lavender-fixed/70" />
 
       <div className="relative z-10 p-6">
         <div className="mb-5 flex items-start gap-4">

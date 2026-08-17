@@ -48,7 +48,8 @@
     --on-error-container: 147 0 10;
 
     --shadow-hard: 90 65 61;
-    --grain-opacity: 0.045;
+    /* Grain is texture, not a visible pattern — barely there is the point. */
+    --grain-opacity: 0.022;
   }
 
   .dark {
@@ -90,7 +91,7 @@
     --on-error-container: 255 218 214;
 
     --shadow-hard: 0 0 0;
-    --grain-opacity: 0.07;
+    --grain-opacity: 0.035;
   }
 
   * {
@@ -170,12 +171,13 @@
            focus:border-primary focus:ring-0 transition-colors duration-200;
   }
 
-  /* Washi tape — a low-opacity block "stuck" onto a card corner. */
+  /* Washi tape. Used sparingly now — a single quiet marker on the thing
+     that matters on a page, rather than stuck to every card. */
   .washi {
-    @apply absolute pointer-events-none mix-blend-multiply;
+    @apply absolute pointer-events-none mix-blend-multiply opacity-50;
   }
   .dark .washi {
-    @apply mix-blend-screen opacity-40;
+    @apply mix-blend-screen opacity-25;
   }
 
   .label-caps {
@@ -225,10 +227,11 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)' opacity='0.06'/%3E%3C/svg%3E");
   }
 
-  /* Oversized decorative watermark type. */
+  /* Oversized decorative watermark type. Faint enough to read as paper
+     texture rather than as a second headline competing with the real one. */
   .watermark {
     @apply pointer-events-none select-none font-display font-extrabold uppercase
-           text-on-surface/[0.035] leading-none tracking-tighter;
+           text-on-surface/[0.015] leading-none tracking-tighter;
   }
 
   .no-scrollbar::-webkit-scrollbar {

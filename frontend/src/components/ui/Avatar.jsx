@@ -55,12 +55,11 @@ export default function Avatar({
     >
       {initials(username)}
 
-      {/* "Wrote today" pip — the one status that matters in this product. */}
+      {/* "Wrote today" pip. Static — a permanently pinging dot on every
+          avatar in a grid is a lot of motion for a status that doesn't change
+          while you're looking at it. */}
       {active && (
-        <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tertiary-bright opacity-70" />
-          <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-surface bg-tertiary-bright" />
-        </span>
+        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-tertiary" />
       )}
     </span>
   );

@@ -39,7 +39,7 @@ export default function ProfileSettings({ className = "" }) {
 
   return (
     <section className={className}>
-      <h2 className="mb-2 font-display text-2xl font-extrabold uppercase tracking-tight">
+      <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-tight">
         Settings
       </h2>
       <p className="mb-4 font-journal text-[15px] italic text-on-surface-variant/70">

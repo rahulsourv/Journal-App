@@ -62,7 +62,7 @@ export default function MyJournal() {
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="font-display text-[2.25rem] font-extrabold uppercase leading-none tracking-[-0.035em] text-primary sm:text-6xl lg:text-7xl"
+            className="font-display text-[2rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] text-primary sm:text-4xl lg:text-5xl"
           >
             Your story
           </motion.h1>
@@ -79,7 +79,7 @@ export default function MyJournal() {
               { value: stats.streak, label: "Day Streak" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="font-display text-4xl font-extrabold leading-none tracking-[-0.04em] tabular-nums">
+                <p className="font-display text-3xl font-bold leading-none tracking-[-0.03em] tabular-nums">
                   {stat.value}
                 </p>
                 <p className="label-caps mt-1.5 text-on-surface-variant/70">{stat.label}</p>

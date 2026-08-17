@@ -85,7 +85,7 @@ export default function JournalEditor({
           {formatDateline()}
         </span>
 
-        <h1 className="mt-2 font-display text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.035em] lg:hidden">
+        <h1 className="mt-2 font-display text-[1.7rem] font-bold leading-tight tracking-[-0.025em] lg:hidden">
           {longDateline}
         </h1>
       </div>
@@ -106,7 +106,7 @@ export default function JournalEditor({
           <h2 className="mb-2 font-journal text-[1.5rem] font-bold italic leading-tight lg:text-[2.5rem] lg:not-italic">
             Dear today,
           </h2>
-          <div className="mb-6 h-0.5 w-full bg-on-surface lg:mb-8" />
+          <div className="mb-6 h-px w-full bg-outline-variant lg:mb-8" />
 
           <textarea
             ref={textareaRef}

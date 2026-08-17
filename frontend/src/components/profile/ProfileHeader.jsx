@@ -26,14 +26,13 @@ export default function ProfileHeader({ user, streak = 0, className = "" }) {
           className="relative"
         >
           <Avatar username={user?.username ?? ""} size="2xl" />
-          <span className="washi -bottom-2 -right-4 h-7 w-24 rotate-[-6deg] bg-secondary-container/80" />
           <span className="absolute -bottom-2 -right-4 rotate-[-6deg] px-2 py-1 font-display text-[11px] font-bold text-on-secondary">
             @{user?.username}
           </span>
         </motion.div>
 
         <div className="min-w-0 flex-1">
-          <h1 className="font-display text-[2.5rem] font-extrabold uppercase leading-none tracking-[-0.03em] md:text-6xl">
+          <h1 className="font-display text-[1.9rem] font-bold uppercase leading-tight tracking-[-0.02em] md:text-4xl">
             {user?.username}
           </h1>
 

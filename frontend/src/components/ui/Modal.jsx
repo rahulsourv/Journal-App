@@ -69,8 +69,6 @@ export default function Modal({
             exit="exit"
             className={`relative w-full ${WIDTHS[size] ?? WIDTHS.md} paper grain-panel outline-none`}
           >
-            {/* washi tape holding the sheet down */}
-            <span className="washi -top-3 left-10 h-6 w-24 rotate-[-4deg] bg-tertiary-bright/45" />
 
             <div className="relative z-10 flex items-start justify-between gap-4 border-b border-outline-variant/60 px-7 py-5">
               <div>
@@ -78,7 +76,7 @@ export default function Modal({
                   <p className="label-caps mb-1 text-primary">{eyebrow}</p>
                 )}
                 {title && (
-                  <h2 className="font-display text-2xl font-extrabold tracking-tight">
+                  <h2 className="font-display text-xl font-bold tracking-tight">
                     {title}
                   </h2>
                 )}

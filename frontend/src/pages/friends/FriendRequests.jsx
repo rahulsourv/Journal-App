@@ -90,7 +90,7 @@ export default function FriendRequests() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55 }}
-          className="font-display text-[2.75rem] font-extrabold uppercase leading-[0.88] tracking-[-0.035em] sm:text-6xl lg:text-7xl"
+          className="font-display text-[2rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] sm:text-4xl lg:text-5xl"
         >
           People
           <br />
@@ -168,7 +168,7 @@ export default function FriendRequests() {
           variants={staggerContainer(0.07)}
           initial="initial"
           animate="animate"
-          className="divide-y divide-outline-variant/60 border-t-2 border-on-surface"
+          className="divide-y divide-outline-variant/60 border-t border-outline-variant"
         >
           <AnimatePresence mode="popLayout">
             {sentRequests.map((request) => (
