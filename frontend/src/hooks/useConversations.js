@@ -30,8 +30,25 @@ export function useConversations() {
   const [loadingPreviews, setLoadingPreviews] = useState(false);
   const [readTick, setReadTick] = useState(0);
 
-  // friendUserId → friendRequestId, recorded when a request was sent/accepted.
-  const idMap = useMemo(() => getConversationMap(myId), [myId]);
+  /**
+   * friendUserId → friendRequestId.
+   *
+   * `viewFriends` now returns `friendRequestId` directly, which is the real
+   * source. The locally cached map — recorded when a request was sent or
+   * accepted — is kept only as a fallback for a backend that predates that
+   * field, and the API always wins where both exist.
+   */
+  const cachedIds = useMemo(() => getConversationMap(myId), [myId]);
+
+  const idMap = useMemo(() => {
+    const merged = { ...cachedIds };
+    friends.forEach((friend) => {
+      if (friend.friendRequestId) {
+        merged[String(friend._id)] = String(friend.friendRequestId);
+      }
+    });
+    return merged;
+  }, [cachedIds, friends]);
 
   const roomIds = useMemo(
     () => friends.map((f) => idMap[String(f._id)]).filter(Boolean),

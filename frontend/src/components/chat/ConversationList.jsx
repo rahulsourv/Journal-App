@@ -7,9 +7,11 @@ import { excerpt, formatRelative } from "../../utils/formatDate";
 /**
  * The list of people you can write to — one row per friend.
  *
- * A friend without a known `conversationId` is shown dimmed and locked
- * rather than hidden, so it's obvious the person exists and why their chat
- * can't open yet. See utils/storage.js for why that id can be missing.
+ * `viewFriends` returns a `friendRequestId` for every friend, so in practice
+ * every row opens. The locked state below is a fallback for the case where
+ * it's absent — an older backend, or a record written before that field
+ * existed. Shown dimmed rather than hidden, so the person doesn't silently
+ * vanish from the list.
  */
 export default function ConversationList({
   conversations = [],
@@ -53,7 +55,7 @@ export default function ConversationList({
                 disabled={locked}
                 title={
                   locked
-                    ? "This friendship predates chat, so its conversation id was never recorded. Chats with people you add or accept from now on open normally."
+                    ? "No conversation id for this friendship, so the chat can't be opened."
                     : undefined
                 }
                 className={`
