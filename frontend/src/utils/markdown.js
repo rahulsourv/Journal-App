@@ -1,10 +1,76 @@
+import { marked } from "marked";
+import TurndownService from "turndown";
+
 /**
  * Markdown helpers for the journal editor.
  *
  * Entries are stored as a plain Markdown string in the existing `content`
- * field — no new fields, no files, no schema change. The toolbar below edits
- * that string; the renderer turns it back into formatted text for reading.
+ * field — no new fields, no files, no schema change.
+ *
+ * The editor itself is WYSIWYG: it edits formatted HTML in a contenteditable
+ * so the writer never sees `#` or `**`, and the two converters below translate
+ * at the boundaries — Markdown in when an entry is opened, Markdown out when
+ * it is saved. Storage and the API are untouched by that choice.
  */
+
+/* ------------------------------------------------------------------ *
+ * Markdown <-> HTML
+ * ------------------------------------------------------------------ */
+
+const turndown = new TurndownService({
+  headingStyle: "atx", // "# Heading", not the underlined form
+  bulletListMarker: "-",
+  codeBlockStyle: "fenced",
+  emDelimiter: "*",
+  strongDelimiter: "**",
+});
+
+// contenteditable emits <div> for new lines in some browsers; treat those as
+// paragraphs so they survive the round trip as blank-line-separated blocks.
+turndown.addRule("divAsParagraph", {
+  filter: (node) =>
+    node.nodeName === "DIV" && !node.querySelector("div,p,ul,ol,blockquote,h1,h2,h3,pre"),
+  replacement: (content) => (content.trim() ? `\n\n${content}\n\n` : "\n\n"),
+});
+
+// Turndown pads list markers to a four-character column ("-   item").
+// That's valid but not what anyone writes by hand, and the stored string is
+// readable data — keep it to a single space.
+turndown.addRule("tightListItem", {
+  filter: "li",
+  replacement: (content, node) => {
+    const body = content
+      .replace(/^\n+/, "")
+      .replace(/\n+$/, "")
+      .replace(/\n/gm, "\n  "); // indent wrapped lines under the marker
+
+    const parent = node.parentNode;
+    const marker =
+      parent.nodeName === "OL"
+        ? `${Array.prototype.indexOf.call(parent.children, node) + 1}. `
+        : "- ";
+
+    return `${marker}${body}\n`;
+  },
+});
+
+/** Markdown → HTML, for loading an entry into the editor. */
+export function markdownToHtml(md = "") {
+  if (!md.trim()) return "";
+  return marked.parse(md, { gfm: true, breaks: false, async: false });
+}
+
+/** HTML → Markdown, for saving what the writer produced. */
+export function htmlToMarkdown(html = "") {
+  if (!html.trim()) return "";
+  return (
+    turndown
+      .turndown(html)
+      // Collapse the runs of blank lines the div rule can leave behind.
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
+}
 
 /* ------------------------------------------------------------------ *
  * Editing

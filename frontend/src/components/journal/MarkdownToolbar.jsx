@@ -10,8 +10,6 @@ import {
   Code,
   Undo2,
   Redo2,
-  Eye,
-  Pencil,
 } from "lucide-react";
 
 /**
@@ -43,18 +41,23 @@ const GROUPS = [
   [{ id: "link", icon: Link2, label: "Link", shortcut: "Ctrl+K" }],
 ];
 
-function ToolButton({ icon: Icon, label, shortcut, onPress, disabled }) {
+function ToolButton({ icon: Icon, label, shortcut, onPress, disabled, active }) {
   return (
     <button
       type="button"
       aria-label={label}
+      aria-pressed={active}
       title={shortcut ? `${label} (${shortcut})` : label}
       disabled={disabled}
       onMouseDown={(e) => {
         e.preventDefault();
         onPress();
       }}
-      className="grid h-8 w-8 shrink-0 place-items-center rounded text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface disabled:opacity-30 disabled:hover:bg-transparent"
+      className={`grid h-8 w-8 shrink-0 place-items-center rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent ${
+        active
+          ? "bg-primary-fixed text-primary"
+          : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+      }`}
     >
       <Icon className="h-[15px] w-[15px]" strokeWidth={2.2} />
     </button>
@@ -65,10 +68,7 @@ export default function MarkdownToolbar({
   onAction,
   onUndo,
   onRedo,
-  canUndo = false,
-  canRedo = false,
-  preview = false,
-  onTogglePreview,
+  active = {},
   disabled = false,
 }) {
   return (
@@ -87,7 +87,10 @@ export default function MarkdownToolbar({
               icon={tool.icon}
               label={tool.label}
               shortcut={tool.shortcut}
-              disabled={disabled || preview}
+              // Reflects what's on at the caret, so the writer can see the
+              // formatting state without reading any syntax.
+              active={Boolean(active[tool.id])}
+              disabled={disabled}
               onPress={() => onAction(tool.id)}
             />
           ))}
@@ -96,48 +99,22 @@ export default function MarkdownToolbar({
 
       <span className="mx-1 h-5 w-px shrink-0 bg-outline-variant/60" aria-hidden="true" />
 
+      {/* Undo/redo delegate to the browser's own contenteditable stack, which
+          stays correct across every edit — so there's nothing to disable. */}
       <ToolButton
         icon={Undo2}
         label="Undo"
         shortcut="Ctrl+Z"
-        disabled={disabled || preview || !canUndo}
+        disabled={disabled}
         onPress={onUndo}
       />
       <ToolButton
         icon={Redo2}
         label="Redo"
         shortcut="Ctrl+Shift+Z"
-        disabled={disabled || preview || !canRedo}
+        disabled={disabled}
         onPress={onRedo}
       />
-
-      {/* Preview matters most on mobile, where the two panes can't sit
-          side by side. */}
-      <button
-        type="button"
-        onMouseDown={(e) => {
-          e.preventDefault();
-          onTogglePreview();
-        }}
-        aria-pressed={preview}
-        className={`ml-auto flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1.5 font-display text-label-caps-sm uppercase transition-colors ${
-          preview
-            ? "bg-primary text-on-primary"
-            : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-        }`}
-      >
-        {preview ? (
-          <>
-            <Pencil className="h-3 w-3" strokeWidth={2.6} />
-            Write
-          </>
-        ) : (
-          <>
-            <Eye className="h-3 w-3" strokeWidth={2.6} />
-            Preview
-          </>
-        )}
-      </button>
     </div>
   );
 }

@@ -188,6 +188,78 @@
     @apply h-px w-full bg-outline-variant/70 border-0;
   }
 
+  /**
+   * The WYSIWYG writing surface.
+   *
+   * A contenteditable produces real elements, so its formatting has to be
+   * styled in CSS rather than through React components. These rules mirror
+   * components/ui/Markdown.jsx deliberately: what the writer sees while
+   * typing should be what the reader sees afterwards.
+   */
+  .rich-text {
+    @apply font-journal text-journal-body leading-[1.8] text-on-surface;
+  }
+
+  .rich-text > *:first-child {
+    @apply mt-0;
+  }
+  .rich-text > *:last-child {
+    @apply mb-0;
+  }
+
+  .rich-text h1 {
+    @apply mb-3 mt-8 font-display text-2xl font-bold leading-tight tracking-tight md:text-3xl;
+  }
+  .rich-text h2 {
+    @apply mb-3 mt-7 font-display text-xl font-bold leading-tight tracking-tight md:text-2xl;
+  }
+  .rich-text h3 {
+    @apply mb-2 mt-6 font-display text-lg font-bold leading-tight tracking-tight;
+  }
+
+  .rich-text p,
+  .rich-text div {
+    @apply mb-5;
+  }
+
+  .rich-text strong,
+  .rich-text b {
+    @apply font-semibold text-on-surface;
+  }
+  .rich-text em,
+  .rich-text i {
+    @apply italic;
+  }
+
+  .rich-text a {
+    @apply text-primary underline decoration-primary/40 underline-offset-[3px];
+  }
+
+  .rich-text ul {
+    @apply mb-5 list-disc space-y-2 pl-6;
+  }
+  .rich-text ol {
+    @apply mb-5 list-decimal space-y-2 pl-6;
+  }
+  .rich-text li::marker {
+    @apply text-primary;
+  }
+
+  .rich-text blockquote {
+    @apply mb-5 border-l-2 border-primary/50 pl-5 italic text-on-surface-variant;
+  }
+
+  .rich-text code {
+    @apply rounded bg-surface-container px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  .rich-text pre {
+    @apply mb-5 overflow-x-auto rounded-lg border border-outline-variant/60 bg-surface-container p-4;
+  }
+
+  .rich-text hr {
+    @apply my-8 border-0 border-t border-outline-variant/70;
+  }
+
   /* Frosted layer — used sparingly, for the locked feed and mobile nav only. */
   .frost {
     backdrop-filter: blur(18px) saturate(140%);
