@@ -17,15 +17,6 @@ import { getSuggestions } from "../../services/userService";
 import useAuth from "../../hooks/useAuth";
 import useFriends from "../../hooks/useFriends";
 import { staggerContainer, staggerItem } from "../../animations/staggerAnimations";
-import { accentFor } from "../../utils/constants";
-
-const TINTS = {
-  primary: "bg-primary-fixed/30",
-  secondary: "bg-secondary-fixed/45",
-  tertiary: "bg-tertiary-fixed/40",
-  lavender: "bg-lavender-fixed/45",
-  mint: "bg-mint-fixed/45",
-};
 
 /**
  * People you aren't connected to yet.
@@ -137,30 +128,22 @@ export default function Discover() {
           animate="animate"
           className="grid gap-gutter sm:grid-cols-2 xl:grid-cols-3"
         >
-          {people.map((person, index) => {
+          {people.map((person) => {
             const sent = sentIds.includes(person._id) || person.relationship === "request_sent";
-            const accent = accentFor(person.username);
 
             return (
               <motion.article
                 key={person._id}
                 variants={staggerItem}
-                whileHover={{ y: -6, x: -2 }}
-                transition={{ duration: 0.3 }}
-                className={`relative overflow-hidden paper grain-panel p-6 ${
-                  index % 3 === 1 ? "md:translate-y-6" : ""
-                }`}
+                whileHover={{ y: -3 }}
+                transition={{ duration: 0.25 }}
+                className="relative overflow-hidden rounded-lg border border-outline-variant/60 bg-surface-lowest p-6 transition-colors duration-200 hover:border-outline-variant"
               >
-                <span
-                  className={`pointer-events-none absolute right-0 top-0 h-28 w-36 ${TINTS[accent]}`}
-                  aria-hidden="true"
-                />
-
-                <div className="relative z-10">
+                <div>
                   <div className="mb-6 flex items-start gap-4">
                     <Avatar username={person.username} size="lg" />
                     <div className="min-w-0 flex-1 pt-1.5">
-                      <h3 className="truncate font-display text-lg font-extrabold tracking-tight">
+                      <h3 className="truncate font-display text-lg font-bold tracking-tight">
                         @{person.username}
                       </h3>
                       <p className="mt-1.5 font-display text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/50">
