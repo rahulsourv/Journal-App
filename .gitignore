@@ -37,6 +37,5 @@ stitch_daymark_editorial_social_journaling/
 stitch_mobile/
 stitch_chat/
 
-# Your friend's backend — lives in his own repo, not committed here.
+# Scratch copy of the backend, not the one that ships.
 perfectbackend/
-backend/
